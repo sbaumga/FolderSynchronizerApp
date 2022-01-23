@@ -200,10 +200,13 @@
     <Compile Include="Abstractions\IConfigManager.cs" />
     <Compile Include="Abstractions\IInternetChecker.cs" />
     <Compile Include="Abstractions\IJsonSerializationService.cs" />
+    <Compile Include="Abstractions\IMediaDeleter.cs" />
+    <Compile Include="Abstractions\IMediaQueryer.cs" />
     <Compile Include="Abstractions\IMediaSaver.cs" />
     <Compile Include="Abstractions\ISerializationService.cs" />
     <Compile Include="AWS\Data\AWSKeyConfigData.cs" />
     <Compile Include="AWS\Data\AWSS3ConfigData.cs" />
+    <Compile Include="AWS\Data\RepeatedPollResultData.cs" />
     <Compile Include="AWS\Data\S3MessageData.cs" />
     <Compile Include="AWS\Data\SerializedSQSAutomatedMessageData.cs" />
     <Compile Include="AWS\Enums\S3Action.cs" />
@@ -212,11 +215,13 @@
     <Compile Include="AWS\Abstractions\ISQSMessageDeleter.cs" />
     <Compile Include="AWS\Abstractions\IS3ClientCreator.cs" />
     <Compile Include="AWS\Abstractions\IS3FileDownloader.cs" />
+    <Compile Include="AWS\Abstractions\IRepeatedSQSPollingService.cs" />
+    <Compile Include="AWS\Implementations\RepeatedSQSPollingServiceImp.cs" />
     <Compile Include="AWS\Implementations\S3ClientCreatorImp.cs" />
     <Compile Include="AWS\Implementations\S3FileDownloaderImp.cs" />
-    <Compile Include="AWS\Implementations\SQSListenerServiceImp.cs" />
+    <Compile Include="AWS\Implementations\SQSPollingServiceImp.cs" />
     <Compile Include="AWS\Data\AWSSQSConfigData.cs" />
-    <Compile Include="AWS\Abstractions\ISQSListenerService.cs" />
+    <Compile Include="AWS\Abstractions\ISQSPollingService.cs" />
     <Compile Include="AWS\Abstractions\ISQSClientCreator.cs" />
     <Compile Include="AWS\Implementations\SQSMessageConsumerServiceImp.cs" />
     <Compile Include="AWS\Abstractions\ISQSAutomatedS3MessageDeserializationService.cs" />
@@ -224,6 +229,7 @@
     <Compile Include="AWS\Implementations\SQSAutomatedS3MessageDeserializationServiceImp.cs" />
     <Compile Include="AWS\Implementations\SQSClientCreatorImp.cs" />
     <Compile Include="AWS\Implementations\SQSMessageDeleterImp.cs" />
+    <Compile Include="Data\AndroidFileQueryResultData.cs" />
     <Compile Include="Exceptions\FolderSynchronizerAppException.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="AWS\Data\AWSConfigData.cs" />
@@ -239,9 +245,7 @@
     <Analyzer Include="..\packages\AWSSDK.S3.3.7.7.5\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
     <Analyzer Include="..\packages\AWSSDK.SQS.3.7.2.6\analyzers\dotnet\cs\AWSSDK.SQS.CodeAnalysis.dll" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Extensions.Logging.Abstractions.6.0.0\build\Microsoft.Extensions.Logging.Abstractions.targets" Condition="Exists('..\packages\Microsoft.Extensions.Logging.Abstractions.6.0.0\build\Microsoft.Extensions.Logging.Abstractions.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

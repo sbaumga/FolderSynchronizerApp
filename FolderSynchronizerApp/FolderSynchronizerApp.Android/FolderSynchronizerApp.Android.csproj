@@ -68,6 +68,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Implementations\AndroidInternetCheckerImp.cs" />
+    <Compile Include="Implementations\MediaDeleterImp.cs" />
+    <Compile Include="Implementations\MediaQueryerImp.cs" />
     <Compile Include="Implementations\MediaSaverImp.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />

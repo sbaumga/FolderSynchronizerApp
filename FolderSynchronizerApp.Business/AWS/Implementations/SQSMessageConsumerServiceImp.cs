@@ -6,9 +6,6 @@ using FolderSynchronizerApp.Business.AWS.Enums;
 using FolderSynchronizerApp.Business.AWS.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FolderSynchronizerApp.Business.AWS.Implementations
 {
@@ -17,12 +14,14 @@ namespace FolderSynchronizerApp.Business.AWS.Implementations
         private ISQSAutomatedS3MessageDeserializationService MessageDeserializationService { get; }
         private ISQSMessageDeleter MessageDeleter { get; }
         private IS3FileDownloader FileDownloader { get; }
+        private IMediaDeleter MediaDeleter { get; }
 
-        public SQSMessageConsumerServiceImp(ISQSAutomatedS3MessageDeserializationService messageDeserializationService, ISQSMessageDeleter messageDeleter, IS3FileDownloader fileDownloader)
+        public SQSMessageConsumerServiceImp(ISQSAutomatedS3MessageDeserializationService messageDeserializationService, ISQSMessageDeleter messageDeleter, IS3FileDownloader fileDownloader, IMediaDeleter mediaDeleter)
         {
             MessageDeserializationService = messageDeserializationService ?? throw new ArgumentNullException(nameof(messageDeserializationService));
             MessageDeleter = messageDeleter ?? throw new ArgumentNullException(nameof(messageDeleter));
             FileDownloader = fileDownloader ?? throw new ArgumentNullException(nameof(fileDownloader));
+            MediaDeleter = mediaDeleter ?? throw new ArgumentNullException(nameof(mediaDeleter));
         }
 
         public IEnumerable<S3MessageData> ConsumeMessages(IList<Message> messages)
@@ -48,7 +47,8 @@ namespace FolderSynchronizerApp.Business.AWS.Implementations
             {
                 messageData = MessageDeserializationService.Deserialize(message);
                 TakeActionFromMessage(messageData);
-            } catch (NotAutomatedMessageException)
+            }
+            catch (NotAutomatedMessageException)
             {
                 // If not an automated message, can't do anything with it,
                 // but we'll delete it so we don't have to deal with it again later.
@@ -66,9 +66,11 @@ namespace FolderSynchronizerApp.Business.AWS.Implementations
                 case S3Action.Upload:
                     DownloadFile(data.Key);
                     break;
+
                 case S3Action.Deletion:
-                    // TODO:
+                    DeleteFile(data.Key);
                     break;
+
                 default:
                     throw new NotImplementedException($"Unsupported {nameof(S3Action)} of {data.Action}");
             }
@@ -84,6 +86,11 @@ namespace FolderSynchronizerApp.Business.AWS.Implementations
             {
                 // File doesn't exist in bucket, can't download so just continue
             }
+        }
+
+        private void DeleteFile(string fileKey)
+        {
+            MediaDeleter.Delete(fileKey);
         }
     }
 }

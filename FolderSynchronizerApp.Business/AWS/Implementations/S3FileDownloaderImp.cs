@@ -43,35 +43,6 @@ namespace FolderSynchronizerApp.Business.AWS.Implementations
             }
         }
 
-        private string GetFileContents(string fileKey)
-        {
-            var client = ClientCreator.GetS3Client();
-
-            try
-            {
-                var response = client.GetObjectAsync(BucketName, fileKey).Result;
-                string fileContents;
-                using (var responseStream = response.ResponseStream)
-                {
-                    // TODO: try saving file to phone using different encodings and seeing if any will play/match up with local copy.
-                    using (var reader = new StreamReader(responseStream, System.Text.Encoding.Unicode))
-                    {
-                        fileContents = reader.ReadToEnd();
-                    }
-                }
-
-                return fileContents;
-            } catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Any(e => e.Message == "The specified key does not exist."))
-                {
-                    throw new FileDoesNotExistInBucketException(fileKey);
-                }
-
-                throw;
-            }
-        }
-
         private byte[] GetFileBytes(string fileKey)
         {
             var client = ClientCreator.GetS3Client();
@@ -80,7 +51,6 @@ namespace FolderSynchronizerApp.Business.AWS.Implementations
             {
                 var response = client.GetObjectAsync(BucketName, fileKey).Result;
 
-                string fileContents;
                 using (var responseStream = response.ResponseStream)
                 {
                     using (var bReader = new BinaryReader(responseStream))

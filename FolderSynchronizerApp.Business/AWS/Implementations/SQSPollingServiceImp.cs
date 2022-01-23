@@ -4,10 +4,11 @@ using FolderSynchronizerApp.Business.AWS.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace FolderSynchronizerApp.Business.AWS.Implementations
 {
-    public class SQSListenerServiceImp : ISQSListenerService
+    public class SQSPollingServiceImp : ISQSPollingService
     {
         private string SQSUrl { get; }
 
@@ -15,7 +16,7 @@ namespace FolderSynchronizerApp.Business.AWS.Implementations
 
         private ISQSMessageConsumerService MessageConsumer { get; }
 
-        public SQSListenerServiceImp(IConfigManager configManager, ISQSClientCreator sqsClientCreator, ISQSMessageConsumerService messageConsumer)
+        public SQSPollingServiceImp(IConfigManager configManager, ISQSClientCreator sqsClientCreator, ISQSMessageConsumerService messageConsumer)
         {
             if (configManager == null)
             {
@@ -40,13 +41,13 @@ namespace FolderSynchronizerApp.Business.AWS.Implementations
             MessageConsumer = messageConsumer;
         }
 
-        public IEnumerable<string> GetMessages()
+
+        public async Task<IEnumerable<string>> GetMessagesAsync()
         {
             var client = SQSClientCreator.CreateClient();
             var request = CreateRequest();
 
-            // await doesn't work for some reason...
-            var response = client.ReceiveMessageAsync(request).Result;
+            var response = await client.ReceiveMessageAsync(request);
 
             var messageData = MessageConsumer.ConsumeMessages(response.Messages);
 

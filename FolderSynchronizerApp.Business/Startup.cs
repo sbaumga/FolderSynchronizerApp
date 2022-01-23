@@ -25,7 +25,8 @@ namespace FolderSynchronizerApp.Business
 
         private static void ConfigureSQS(IServiceCollection services)
         {
-            services.AddTransient<ISQSListenerService, SQSListenerServiceImp>();
+            services.AddTransient<ISQSPollingService, SQSPollingServiceImp>();
+            services.AddTransient<IRepeatedSQSPollingService, RepeatedSQSPollingServiceImp>();
             services.AddTransient<ISQSClientCreator, SQSClientCreatorImp>();
 
             services.AddTransient<ISQSMessageConsumerService, SQSMessageConsumerServiceImp>();

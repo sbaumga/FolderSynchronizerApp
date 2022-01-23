@@ -46,6 +46,8 @@ namespace FolderSynchronizerApp.Droid
 
             services.AddTransient<IInternetChecker, AndroidInternetCheckerImp>();
             services.AddTransient<IMediaSaver, MediaSaverImp>();
+            services.AddTransient<IMediaQueryer, MediaQueryerImp>();
+            services.AddTransient<IMediaDeleter, MediaDeleterImp>();
         }
     }
 }
