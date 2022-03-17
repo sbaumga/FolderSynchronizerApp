@@ -216,6 +216,7 @@
     <Compile Include="AWS\Abstractions\IS3ClientCreator.cs" />
     <Compile Include="AWS\Abstractions\IS3FileDownloader.cs" />
     <Compile Include="AWS\Abstractions\IRepeatedSQSPollingService.cs" />
+    <Compile Include="AWS\Exceptions\UnsupportedSQSEventRecordCountException.cs" />
     <Compile Include="AWS\Implementations\RepeatedSQSPollingServiceImp.cs" />
     <Compile Include="AWS\Implementations\S3ClientCreatorImp.cs" />
     <Compile Include="AWS\Implementations\S3FileDownloaderImp.cs" />

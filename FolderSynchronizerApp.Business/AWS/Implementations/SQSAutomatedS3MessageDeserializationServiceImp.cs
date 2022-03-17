@@ -6,6 +6,7 @@ using FolderSynchronizerApp.Business.AWS.Enums;
 using FolderSynchronizerApp.Business.AWS.Exceptions;
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace FolderSynchronizerApp.Business.AWS.Implementations
 {
@@ -20,6 +21,11 @@ namespace FolderSynchronizerApp.Business.AWS.Implementations
 
         public S3MessageData Deserialize(Message message)
         {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
             try
             {
                 var deserializedData = SerializationService.Deserialize<SerializedSQSAutomatedMessageData>(message.Body);
@@ -34,6 +40,11 @@ namespace FolderSynchronizerApp.Business.AWS.Implementations
 
         private S3MessageData ConvertDeserializedDataToS3Data(SerializedSQSAutomatedMessageData deserializedData)
         {
+            if (deserializedData.Records.Count() != 1)
+            {
+                throw new UnsupportedSQSEventRecordCountException(deserializedData.Records.Count());
+            }
+
             var record = deserializedData.Records.Single();
             var result = new S3MessageData
             {
@@ -48,17 +59,32 @@ namespace FolderSynchronizerApp.Business.AWS.Implementations
 
         private string SanitizeKey(string key)
         {
-            var sanitizedKey = key.Replace('+', ' ');
-            return sanitizedKey;
+            foreach(var pair in ReplacementPairs)
+            {
+                key = key.Replace(pair.Item1, pair.Item2);
+            }
+            
+            return key;
         }
+
+        private Tuple<string, string>[] ReplacementPairs => new[]
+        {
+            Tuple.Create("+", " "),
+            Tuple.Create("%26", "&"),
+            Tuple.Create("%28", "("),
+            Tuple.Create("%29", ")")
+        };
+
+        public const string UploadEventName = "ObjectCreated:Put";
+        public const string DeleteEventName = "ObjectRemoved:Delete";
 
         private S3Action ConvertEventNameToS3Action(string eventName)
         {
             switch (eventName)
             {
-                case "ObjectCreated:Put":
+                case UploadEventName:
                     return S3Action.Upload;
-                case "ObjectRemoved:Delete":
+                case DeleteEventName:
                     return S3Action.Deletion;
                 default:
                     throw new NotImplementedException($"Unknown event name: {eventName}.");
